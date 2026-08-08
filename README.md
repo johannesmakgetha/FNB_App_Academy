@@ -1,5 +1,5 @@
 # FNB_App_Academy
-
+![FNB APP Image](images/Fnb_app.png)
 
 ## FNB PREACADEMY INTRODUCTION TO PYTHON CODING
 
