@@ -59,6 +59,7 @@ def count_vowels(text):
     """
     # TODO: loop through the characters and count the vowels
     total = 0
+    
     for i in text:
         if i in "aeiou":
             total += 1
