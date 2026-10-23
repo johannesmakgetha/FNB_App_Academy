@@ -1,4 +1,24 @@
 import flet as ft
+import json
+import os
+from pathlib import Path
+
+import flet as ft
+
+def get_assets_dir() -> Path:
+    default_assets_dir = Path(__file__).parent / "assets"   # fallback for local runs
+    return Path(os.environ.get("FLET_ASSETS_DIR", str(default_assets_dir))).resolve()
+
+
+
+
+def read_username():
+    file_path = get_assets_dir() / "data" / "username.json"
+    with open(file_path,"r") as f:
+        username = json.load(f)
+        return username["username"]
+
+
 
 def greet_page(page: ft.Page) ->ft.View:
 
@@ -7,7 +27,7 @@ def greet_page(page: ft.Page) ->ft.View:
 
     
     display = ft.Text(
-            value="Hello",
+            value=f"Hello, {read_username()}",
             weight=ft.FontWeight.BOLD,
             size=20
                     )
