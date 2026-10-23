@@ -1,11 +1,37 @@
 import flet as ft
+import json
+import os
+from pathlib import Path
+
+import flet as ft
+
+def get_assets_dir() -> Path:
+    default_assets_dir = Path(__file__).parent / "assets"   # fallback for local runs
+    return Path(os.environ.get("FLET_ASSETS_DIR", str(default_assets_dir))).resolve()
+
+def write_username(username):
+    file_path = get_assets_dir() / "data" / "username.json"
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    user ={
+        "username":username,
+        }
+
+    with open(file_path,"w") as f:
+        json.dump(user,f,indent=2)
+
+
 
 def home_page(page: ft.Page) ->ft.View:
 
     async def go_greet(e):
         await page.push_route("/greetings")
 
-
+    alert = ft.AlertDialog(
+        content=ft.Text("Please Enter a username!"),
+        alignment=ft.Alignment.CENTER,
+        title_padding=ft.Padding.all(25),
+    )
 
     username = ft.TextField(
                 text_style=ft.TextStyle(
@@ -23,16 +49,14 @@ def home_page(page: ft.Page) ->ft.View:
                     size=15)
             
             )
-    display = ft.Text(
-                    weight=ft.FontWeight.BOLD,
-                    size=20
-                    )
+   
     async def greet(e):
         if not username.value:
-            username.helper = "Enter a name"
-            username.update()
+            page.show_dialog(alert)
+            page.update()
             return
         else:
+            write_username(username.value)
             await go_greet(e)
             username.helper = None
             username.update()
