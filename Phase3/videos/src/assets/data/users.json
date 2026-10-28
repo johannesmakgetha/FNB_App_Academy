@@ -1,0 +1,22 @@
+{
+  "users": [
+    {
+      "id": "usr_001",
+      "name": "Thabo Mokoena",
+      "username": "thabom",
+      "password": "MiniBank123"
+    },
+    {
+      "id": "usr_002",
+      "name": "Naledi Dlamini",
+      "username": "naledid",
+      "password": "Securepass1"
+    },
+    {
+      "id": "usr_003",
+      "name": "Sipho Ndlovu",
+      "username": "siphon",
+      "password": "987654"
+    }
+  ]
+}
