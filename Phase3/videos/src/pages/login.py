@@ -1,7 +1,7 @@
 import flet as ft
+from components.reset_password import reset_password
 
-
-def main(page: ft.Page):
+def login_page(page: ft.Page) -> ft.View:
     page.title = "Login Page"
 
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
@@ -71,8 +71,9 @@ def main(page: ft.Page):
     def login_sign(e):
         if e.control.content.value == "Sign up":
             print("Sign up")
-        else:
-            print("Forgot password")
+
+    def on_forgot_password(e):
+        page.show_dialog(reset_password(page))
     
     body = ft.Container(
         expand=True,
@@ -144,9 +145,9 @@ def main(page: ft.Page):
                                 )
                             ),
                             ft.GestureDetector(
-                                on_tap=login_sign,
+                                on_tap=on_forgot_password,
                                 content=ft.Text(
-                                    "Forgot password",
+                                    "Forgot password?",
                                     size = 15,
                                     weight=ft.FontWeight.BOLD,
                                     color="#0084a8",
@@ -203,8 +204,4 @@ def main(page: ft.Page):
         )
     )
 
-    page.add(body)
-
-
-if __name__ == "__main__":
-    ft.run(main)
+    return body
