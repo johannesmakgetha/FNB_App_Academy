@@ -4,8 +4,6 @@ import flet as ft
 def home_page(page: ft.Page) -> ft.View:
 
     top = ft.Container(
-        width = 310,
-        height = 660 * 0.40,
         gradient = ft.LinearGradient(
                 begin = ft.Alignment.BOTTOM_LEFT,
                 end = ft.Alignment.TOP_LEFT,
