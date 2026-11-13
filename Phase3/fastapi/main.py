@@ -7,23 +7,16 @@ class Item(BaseModel):
     price: float 
     brand: Optional[str] = None
 
+class UpdateItem(BaseModel):
+    name: Optional[str] = None
+    price: Optional[float] = None 
+    brand: Optional[str] = None
+
 
 app = FastAPI()
 
 
-inventory = {
-    1 : {
-        "name": "Milk",
-        "price": 3.99,
-        "brand": "Regular"
-    },
-    2 : {
-            "name": "Eggs",
-            "price": 8.99,
-            "brand": "Large"
-        }
-
-}
+inventory = {}
 
 @app.get("/get-item/{item_id}")
 def get_item(item_id: int = Path(description="The Id of what you would like to view",title="THE ID",gt=0)):
@@ -38,6 +31,10 @@ def get_item(name:str = Query(description="The name of the item you want to view
             return inventory[item_id]
     return {"Data": "Not found"}
 
+@app.get("/all-items")
+def all_items():
+     return inventory
+
 
 @app.post("/create-item/item_id")
 def create_item(item_id: int,item:Item):
@@ -47,10 +44,19 @@ def create_item(item_id: int,item:Item):
     return inventory[item_id]
 
 
-@app.put("/update-item/{item_id}")
-def update_item(item_id: int, item: Item):
-    if item_id not in inventory:
-        return {"Data": ""}
 
-    
-    
+@app.put("/update-item/{item_id}")
+def update_item(item_id: int, item: UpdateItem):
+    if item_id not in inventory:
+        return {"Data": "Id does not exist"}
+
+    if item.name != None:
+        inventory[item_id].name = item.name
+
+    if item.price != None:
+            inventory[item_id].price = item.price
+
+    if item.brand != None:
+            inventory[item_id].brand = item.brand
+
+    return inventory[item_id]
