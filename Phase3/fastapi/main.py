@@ -46,7 +46,7 @@ def create_item(item_id: int,item:Item):
 
 
 @app.put("/update-item/{item_id}")
-def update_item(item_id: int, item: UpdateItem):
+def update_item(*,item_id: int = Path(description="The Id of Item to update",gt=0), item: UpdateItem):
     if item_id not in inventory:
         return {"Data": "Id does not exist"}
 
@@ -60,3 +60,12 @@ def update_item(item_id: int, item: UpdateItem):
             inventory[item_id].brand = item.brand
 
     return inventory[item_id]
+
+
+@app.delete("/delete-item/")
+def delete_item(item_id: int = Query(...,description="The Id of item to delete", gt=0)):
+     if item_id not in inventory:
+          return {"Data": "Item ID does not exist"}
+
+     del inventory[item_id]
+     return {"Deleted": "Item deleted"}
