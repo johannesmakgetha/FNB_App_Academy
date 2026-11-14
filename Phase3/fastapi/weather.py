@@ -47,14 +47,14 @@ async def get_coordinates(city_name: str):
             print(f"API error: {e}")
             return None
 
-city = input("city: ")
-fff = asyncio.run(get_coordinates(city))
+# city = input("city: ")
+# fff = asyncio.run(get_coordinates(city))
     
-lat = fff[1]["lat"] 
-lon = fff[1]["lon"] 
+# lat = fff[1]["lat"] 
+# lon = fff[1]["lon"] 
 
 
-async def current(lat,lon):
+async def get_current(lat,lon):
     URL = "https://api.openweathermap.org/data/2.5/weather"
     async with httpx.AsyncClient() as client:
         try:
@@ -80,7 +80,7 @@ async def current(lat,lon):
 
 
 
-async def forecast(lat,lon):
+async def get_forecast(lat,lon):
     URL = "https://api.openweathermap.org/data/2.5/forecast"
     
     async with httpx.AsyncClient() as client:
@@ -167,15 +167,15 @@ async def forecast(lat,lon):
             print(f"API error: {e}")
             return None
 
-current =  asyncio.run(current(lat,lon))
-forecast = asyncio.run(forecast(lat,lon))
+# current =  asyncio.run(get_current(lat,lon))
+# forecast = asyncio.run(get_forecast(lat,lon))
 
 
-with open("current.json","w",encoding="utf-8") as f:
-    json.dump(current,f,indent=4)
+# with open("current.json","w",encoding="utf-8") as f:
+#     json.dump(current,f,indent=4)
 
-with open("forecast.json","w", encoding="utf-8") as f:
-    json.dump(forecast,f,indent=4)
+# with open("forecast.json","w", encoding="utf-8") as f:
+#     json.dump(forecast,f,indent=4)
 
 
 
