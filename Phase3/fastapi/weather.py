@@ -106,15 +106,22 @@ async def get_forecast(lat,lon):
             days_min_max = {}
             data = {}
 
+            # for i in range(9):
+            #     if str(datetime.today()).split()[0] in data_response["list"][i]["dt_txt"]:
+            #         data_hour[f"time{i+1}"] = {
+            #             "time": data_response["list"][i]["dt_txt"].split()[1],
+            #             "temp": int(data_response["list"][i]["main"]["temp"]),
+            #             "rain": int(data_response["list"][i]["pop"] * 100),
+            #             "icon": data_response["list"][i]["weather"][0]["icon"]
+            #         }
             for i in range(9):
-                if str(datetime.today()).split()[0] in data_response["list"][i]["dt_txt"]:
-                    data_hour[f"time{i+1}"] = {
-                        "time": data_response["list"][i]["dt_txt"].split()[1],
-                        "temp": int(data_response["list"][i]["main"]["temp"]),
-                        "rain": int(data_response["list"][i]["pop"] * 100),
-                        "icon": data_response["list"][i]["weather"][0]["icon"]
-                    }
-
+                data_hour[f"time{i+1}"] = {
+                "time": data_response["list"][i]["dt_txt"].split()[1],
+                "temp": int(data_response["list"][i]["main"]["temp"]),
+                "rain": int(data_response["list"][i]["pop"] * 100),
+                "icon": data_response["list"][i]["weather"][0]["icon"]
+                }
+            
             for i in range(len(data_response["list"])):
                 date_str = data_response["list"][i]["dt_txt"]
                 dt_obj = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
