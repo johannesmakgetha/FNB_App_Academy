@@ -1,8 +1,69 @@
 import flet as ft
+import httpx
 
+
+
+LATLON_URL = "http://127.0.0.1:8000/weather"
 
 def home_page(page: ft.Page) -> ft.View:
+    lat_input = ft.TextField(
+        label="lat"
+    )
+    lon_input = ft.TextField(
+        label="lon"
+    )
 
+    async def search_weather(e):
+        lat = lat_input.value
+        lon = lon_input.value
+
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(
+                    url=LATLON_URL,
+                    params={
+                        "lat":lat,
+                        "lon":lon
+                    }    
+                )
+                response.raise_for_status()
+                data = response.json()
+
+                # data
+                current = data.get("current",{})
+                city = current.get("name","")
+                current_temp = int(current.get("main",{}).get("temp",0))
+                current_description = data["current"]["weather"][0]["description"]
+                high_current_temp = int(current.get("main",{}).get("temp_max",0))
+                low_current_temp = int(current.get("main",{}).get("temp_min",0))
+
+                current_feel_like = int(current.get("main",{}).get("feels_like",0))
+                humidity = current.get("main",{}).get("humidity",0)
+                wind = int(current.get("wind",{}).get("speed",0) * 3.6)
+                visibility = int(current.get("visibility",0) / 1000)
+
+
+                curr_temp = data["current"]
+                hour_cast = data["forecast"]["hours"]
+                day_cast = data["forecast"]["days"]
+                
+                print(
+                    f"""
+                    name: {city}
+                    temp: {current_temp}
+                    description: {current_description}
+                    high: {high_current_temp}
+                    low: {low_current_temp}
+                    
+                    feels like: {current_feel_like}
+                    humidity: {humidity} %
+                    wind: {wind} km/h
+                    visibility: {visibility} km
+                    """)
+
+        except:
+            pass
+    
     top = ft.Container(
         gradient = ft.LinearGradient(
                 begin = ft.Alignment.BOTTOM_LEFT,
@@ -160,23 +221,192 @@ def home_page(page: ft.Page) -> ft.View:
                         create_container("Feels like", "24°C"),
                         create_container("Humidity", "65%"),
                         create_container("Wind", "12 km/h"),
+                        create_container("Visibility", "10 km"),
                     ],
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                     
                 ),
-                # Bottow row
-                ft.Row(
-                    controls=[
-                        create_container("UV Index", "5"),
-                        create_container("Visibility", "10 km"),
-                        create_container("Air quality", "Good"),
-                    ],
-                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN
-                )
+                
             ]
         )
 
     )
+
+    def hour_forecast_container(time,icon,temp,rain):
+        return ft.Container(
+                    width=90,
+                    height=150,
+                    bgcolor=ft.Colors.WHITE,
+                    border_radius=10,
+                    padding = 10,
+                    content = ft.Column(
+                        controls=[
+                            ft.Text(
+                                time,
+                                size=15,
+                                color=ft.Colors.GREY_800
+                            ),
+                            ft.Icon(
+                                icon,
+                                size=25,
+                                color=ft.Colors.BLUE_GREY
+                            ),
+                            ft.Text(
+                                value=f"{temp}°",
+                                size=15,
+                                color=ft.Colors.BLACK,
+                                weight=ft.FontWeight.BOLD
+                            ),
+                            ft.Row(
+                                spacing=0,
+                                controls=[
+                                    ft.Icon(
+                                        icon=ft.Icons.WATER_DROP,
+
+                                    ),
+                                    ft.Text(
+                                        value=f"{rain}%",
+                                        color=ft.Colors.BLACK,
+                                        weight=ft.FontWeight.BOLD
+                                    ),
+                                ]
+                            )
+                        ],
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        
+                    )
+                    
+                )
+
+    hourly_forecast = [
+    {"time": "09:00", "icon": ft.Icons.WB_SUNNY, "temp": 24, "rain": 0},
+    {"time": "10:00", "icon": ft.Icons.WB_SUNNY, "temp": 26, "rain": 0},
+    {"time": "11:00", "icon": ft.Icons.WB_CLOUDY, "temp": 27, "rain": 5},
+    {"time": "12:00", "icon": ft.Icons.CLOUD, "temp": 28, "rain": 10},
+    {"time": "13:00", "icon": ft.Icons.WATER_DROP, "temp": 25, "rain": 60},
+    {"time": "14:00", "icon": ft.Icons.THUNDERSTORM, "temp": 23, "rain": 80},
+    {"time": "15:00", "icon": ft.Icons.CLOUD, "temp": 22, "rain": 20},
+    {"time": "16:00", "icon": ft.Icons.WB_SUNNY, "temp": 21, "rain": 0},
+    {"time": "17:00", "icon": ft.Icons.WB_SUNNY, "temp": 20, "rain": 0},
+        ]
+
+    day_forecast = [
+    {"day": "Mon", "icon": ft.Icons.WB_SUNNY, "min_temp": 16, "max_temp": 28, "rain": 0},
+    {"day": "Tue", "icon": ft.Icons.WB_CLOUDY, "min_temp": 17, "max_temp": 26, "rain": 10},
+    {"day": "Wed", "icon": ft.Icons.CLOUD, "min_temp": 15, "max_temp": 24, "rain": 30},
+    {"day": "Thu", "icon": ft.Icons.THUNDERSTORM, "min_temp": 14, "max_temp": 22, "rain": 80},
+    {"day": "Fri", "icon": ft.Icons.WATER_DROP, "min_temp": 15, "max_temp": 23, "rain": 60},
+]
+    def day_forecast_container(days,icon,min_temp,max_temp,rain):
+        return ft.Container(
+                    border=ft.Border.all(1,ft.Colors.with_opacity(0.3,ft.Colors.GREY_800)),
+                    height=80,
+                    bgcolor=ft.Colors.WHITE,
+                    border_radius=10,
+                    padding = 10,
+                    content = ft.Row(
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        controls=[
+                            ft.Text(
+                                days,
+                                size=15,
+                                color=ft.Colors.GREY_800
+                            ),
+                            ft.Row(
+                                spacing=0,
+                                controls=[
+                                ft.Icon(
+                                    icon=ft.Icons.WATER_DROP,
+                                    ),
+                                ft.Text(
+                                    value=f"{rain}%",
+                                    color=ft.Colors.BLACK,
+                                    weight=ft.FontWeight.BOLD
+                                    ),
+                                ]
+                            ),
+
+                            ft.Icon(
+                                icon,
+                                size=25,
+                                color=ft.Colors.BLUE_GREY
+                            ),
+                            ft.Text(
+                                value=f"{min_temp}°",
+                                size=15,
+                                color=ft.Colors.BLACK,
+                                weight=ft.FontWeight.BOLD
+                            ),
+                            ft.Text(
+                                value="|",
+                                size=15,
+                                color=ft.Colors.BLACK,
+                                weight=ft.FontWeight.BOLD
+                            ),
+                            ft.Text(
+                                value=f"{max_temp}°",
+                                size=15,
+                                color=ft.Colors.BLACK,
+                                weight=ft.FontWeight.BOLD
+                            ),
+                            
+                        ],
+                        vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                        
+                    )
+                    
+                )
+    
+    body_hour = ft.Container(
+        padding = 10,
+        border_radius=10,
+        gradient=ft.LinearGradient(
+            begin=ft.Alignment(-0.707, -0.707),
+            end=ft.Alignment(0.707, 0.707),
+            colors=[
+                ft.Colors.with_opacity(1, "#EDF8F6"),
+                ft.Colors.with_opacity(1, "#EDF1FB"),
+                ],
+        ),
+
+        content = ft.Row(
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            controls = [
+                hour_forecast_container(hour["time"],hour["icon"],hour["temp"],hour["rain"]) for hour in hourly_forecast
+            ],
+            scroll=ft.ScrollMode.AUTO
+        )
+    )
+
+    body_day = ft.Container(
+            padding = 10,
+            border_radius=10,
+            gradient=ft.LinearGradient(
+                begin=ft.Alignment(-0.707, -0.707),
+                end=ft.Alignment(0.707, 0.707),
+                colors=[
+                    ft.Colors.with_opacity(1, "#EDF8F6"),
+                    ft.Colors.with_opacity(1, "#EDF1FB"),
+                    ],
+            ),
+    
+            content = ft.Column(
+                alignment = ft.MainAxisAlignment.SPACE_BETWEEN,
+                spacing =0,
+                controls = [
+                    day_forecast_container(day["day"],day["icon"],day["min_temp"],day["max_temp"],day["rain"]) for day in day_forecast
+                ],
+                scroll=ft.ScrollMode.AUTO
+            )
+        )
+
+    search_button = ft.Button(
+            content = "Search",
+            on_click = search_weather
+
+            
+        )
+
     main_layout = ft.Container(
         expand=True,
         gradient= ft.LinearGradient(
@@ -190,10 +420,18 @@ def home_page(page: ft.Page) -> ft.View:
                 ),
         padding=20,
         content=ft.Column(
+            scroll=ft.ScrollMode.AUTO,
             controls=[
+                lat_input,
+                lon_input,
+                search_button,
                 top,
                 ft.Text("Weather now", size=30,color=ft.Colors.WHITE,weight=ft.FontWeight.BOLD),
                 top_body,
+                ft.Text("Hour forecast", size=30,color=ft.Colors.WHITE,weight=ft.FontWeight.BOLD),
+                body_hour,
+                ft.Text("Day forecast", size=30,color=ft.Colors.WHITE,weight=ft.FontWeight.BOLD),
+                body_day,
                 ft.Text(
                     "Bottom Content",
                     size = 30,
