@@ -106,26 +106,27 @@ def home_page(page: ft.Page) -> ft.View:
 
 
     
-    def create_container(sett,value):
-        if sett == "Feels like":
+    def create_container(title_container,value):
+        if title_container == "Feels like":
             icon_to_use = ft.Icons.THERMOSTAT
 
-        elif sett == "Humidity":
+        elif title_container == "Humidity":
             icon_to_use = ft.Icons.WATER_DROP
             
-        elif sett == "Wind":
+        elif title_container == "Wind":
             icon_to_use = ft.Icons.AIR
             
-        elif sett == "UV Index":
-            icon_to_use = ft.Icons.WB_SUNNY
-            
-        elif sett == "Visibility":
+        elif title_container == "Visibility":
             icon_to_use = ft.Icons.VISIBILITY
-            
-        elif sett == "Air quality":
-            icon_to_use = ft.Icons.MASKS
-            
-        return ft.Container(
+
+        value_text = ft.Text(
+                    str(value),
+                    size=15,
+                    color=ft.Colors.BLACK,
+                    weight=ft.FontWeight.BOLD
+                )
+
+        current_container =  ft.Container(
             width=150,
             height=100,
             bgcolor=ft.Colors.WHITE,
@@ -141,24 +142,28 @@ def home_page(page: ft.Page) -> ft.View:
                     ft.Column(
                         controls=[
                             ft.Text(
-                                sett,
+                                title_container,
                                 size=15,
                                 color=ft.Colors.GREY_800
                             ),
-                            ft.Text(
-                                str(value),
-                                size=15,
-                                color=ft.Colors.BLACK,
-                                weight=ft.FontWeight.BOLD
-                            )
+                            value_text
                         ],
                         alignment=ft.MainAxisAlignment.CENTER
                     )
                 ],
                 vertical_alignment=ft.CrossAxisAlignment.CENTER
             )
-            
-        )
+            )
+
+        return current_container, value_text
+
+    feels_like_container, feels_like_text = create_container("Feels like","")
+    humidity_container, humidity_text = create_container("Humidity","")
+    wind_container, wind_text = create_container("Wind","")
+    visibility_container, visibility_text = create_container("Visibility","")
+
+
+    
     top_body = ft.Container(
         padding = 10,
         border_radius=10,
@@ -177,10 +182,10 @@ def home_page(page: ft.Page) -> ft.View:
                 ft.Row(
                         
                     controls=[
-                        create_container("Feels like", "24°C"),
-                        create_container("Humidity", "65%"),
-                        create_container("Wind", "12 km/h"),
-                        create_container("Visibility", "10 km"),
+                        feels_like_container,
+                        humidity_container,
+                        wind_container,
+                        visibility_container,
                     ],
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                     
@@ -404,9 +409,14 @@ def home_page(page: ft.Page) -> ft.View:
                 city_high.value = f"H: {high_current_temp}°C"
                 city_low.value = f"L: {low_current_temp}°C"
                 city_feel_like.value = f"Feel like {current_feel_like}°C"
-                city_humidity.value = f"{humidity} %"
-                city_wind.value = f"{wind} km/h"
-                city_visibility.value = f"{visibility} km"
+                city_humidity_value = f"{humidity} %"
+                city_wind_value = f"{wind} km/h"
+                city_visibility_value = f"{visibility} km"
+
+                feels_like_text.value = f"{current_feel_like}°C"
+                humidity_text.value = city_humidity_value
+                wind_text.value = city_wind_value
+                visibility_text.value = city_visibility_value
                     
                     
                 print(
