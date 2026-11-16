@@ -30,7 +30,9 @@ def home_page(page: ft.Page) -> ft.View:
         )
 
     daily_column = ft.Column(
-        alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+        spacing=0,
+        scroll=ft.ScrollMode.AUTO
     )
 
     def weather_icon(icon_code: str,size: int= 100):
@@ -313,30 +315,51 @@ def home_page(page: ft.Page) -> ft.View:
                                     ),
                                 ]
                             ),
+                            icon,
+                            ft.Row(
+                                spacing=0,
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                controls=[
+                                    ft.Text(
+                                        value=f"{min_temp}°",
+                                        size=15,
+                                        color=ft.Colors.BLACK,
+                                        weight=ft.FontWeight.BOLD
+                                    ),
+                                    ft.Text(
+                                        value="|",
+                                        size=15,
+                                        color=ft.Colors.BLACK,
+                                        weight=ft.FontWeight.BOLD
+                                    ),
+                                    ft.Text(
+                                        value=f"{max_temp}°",
+                                        size=15,
+                                        color=ft.Colors.BLACK,
+                                        weight=ft.FontWeight.BOLD
+                                    ),
+                                ]
 
-                            ft.Icon(
-                                icon,
-                                size=25,
-                                color=ft.Colors.BLUE_GREY
                             ),
-                            ft.Text(
-                                value=f"{min_temp}°",
-                                size=15,
-                                color=ft.Colors.BLACK,
-                                weight=ft.FontWeight.BOLD
-                            ),
-                            ft.Text(
-                                value="|",
-                                size=15,
-                                color=ft.Colors.BLACK,
-                                weight=ft.FontWeight.BOLD
-                            ),
-                            ft.Text(
-                                value=f"{max_temp}°",
-                                size=15,
-                                color=ft.Colors.BLACK,
-                                weight=ft.FontWeight.BOLD
-                            ),
+
+                            # ft.Text(
+                            #     value=f"{min_temp}°",
+                            #     size=15,
+                            #     color=ft.Colors.BLACK,
+                            #     weight=ft.FontWeight.BOLD
+                            # ),
+                            # ft.Text(
+                            #     value="|",
+                            #     size=15,
+                            #     color=ft.Colors.BLACK,
+                            #     weight=ft.FontWeight.BOLD
+                            # ),
+                            # ft.Text(
+                            #     value=f"{max_temp}°",
+                            #     size=15,
+                            #     color=ft.Colors.BLACK,
+                            #     weight=ft.FontWeight.BOLD
+                            # ),
                             
                         ],
                         vertical_alignment=ft.CrossAxisAlignment.CENTER,
@@ -372,15 +395,15 @@ def home_page(page: ft.Page) -> ft.View:
                     ft.Colors.with_opacity(1, "#EDF1FB"),
                     ],
             ),
-    
-            content = ft.Column(
-                alignment = ft.MainAxisAlignment.SPACE_BETWEEN,
-                spacing =0,
-                controls = [
-                    day_forecast_container(day["day"],day["icon"],day["min_temp"],day["max_temp"],day["rain"]) for day in day_forecast
-                ],
-                scroll=ft.ScrollMode.AUTO
-            )
+            content = daily_column
+            # content = ft.Column(
+            #     alignment = ft.MainAxisAlignment.SPACE_BETWEEN,
+            #     spacing =0,
+            #     controls = [
+            #         day_forecast_container(day["day"],day["icon"],day["min_temp"],day["max_temp"],day["rain"]) for day in day_forecast
+            #     ],
+            #     scroll=ft.ScrollMode.AUTO
+            # )
         )
 
 
@@ -431,8 +454,20 @@ def home_page(page: ft.Page) -> ft.View:
                 )
                 for hour in hourly_three
                 ]
-
+                # Forecast
                 day_cast = data["forecast"]["days"]
+
+                ffdfd = [ (i,day_cast[i]["icon"]) for i in day_cast]
+                ffd = [ 
+                    day_forecast_container(
+                        i,
+                        weather_icon(day_cast[i]["icon"],50),
+                        day_cast[i]["min_temp"],
+                        day_cast[i]["max_temp"],
+                        day_cast[i]["rain"]
+                    )     
+                for i in day_cast]
+                print(ffd)
     
                     # assign the data
     
@@ -459,9 +494,14 @@ def home_page(page: ft.Page) -> ft.View:
                 # Forecast
                 # Hour
                 hourly_row.controls = hourly_controls
+
+                # Day
+
+                daily_column.controls = ffd
+
                     
                 
-                print(hourly_controls)
+                print(day_cast)
                 
     
         except httpx.HTTPError as e:
