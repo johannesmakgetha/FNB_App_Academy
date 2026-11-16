@@ -24,7 +24,34 @@ def home_page(page: ft.Page) -> ft.View:
     city_visibility = ft.Text(value="")
     
 
- 
+    hourly_row = ft.Row(
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            scroll=ft.ScrollMode.AUTO
+        )
+
+    daily_column = ft.Column(
+        alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+    )
+
+    def weather_icon(icon_code: str,size: int= 100):
+        if icon_code:
+            src_value = f"https://openweathermap.org/img/wn/{icon_code}@2x.png"
+        else:
+            src_value = "https://openweathermap.org/img/wn/01d@2x.png"
+
+        return ft.Image(
+                visible=bool(icon_code),
+                src = src_value,
+                width=size,
+                height=size,
+                fit=ft.BoxFit.CONTAIN
+        )
+
+
+    # all icons 
+    current_weather_icon = weather_icon("")
+
+    
     top = ft.Container(
         gradient = ft.LinearGradient(
                 begin = ft.Alignment.BOTTOM_LEFT,
@@ -76,10 +103,7 @@ def home_page(page: ft.Page) -> ft.View:
                             ]
 
                         ),
-                        ft.Container(
-                            bgcolor=ft.Colors.WHITE,
-                            content=ft.Text("Icon")
-                        )
+                        current_weather_icon
                     ]
                 ),
 
@@ -162,7 +186,7 @@ def home_page(page: ft.Page) -> ft.View:
     wind_container, wind_text = create_container("Wind","")
     visibility_container, visibility_text = create_container("Visibility","")
 
-
+    
     
     top_body = ft.Container(
         padding = 10,
@@ -199,39 +223,39 @@ def home_page(page: ft.Page) -> ft.View:
     def hour_forecast_container(time,icon,temp,rain):
         return ft.Container(
                     width=90,
-                    height=150,
+                    height=160,
                     bgcolor=ft.Colors.WHITE,
                     border_radius=10,
-                    padding = 10,
+                    padding = ft.Padding(15,15,15,35),
                     content = ft.Column(
+                        spacing =5,
                         controls=[
                             ft.Text(
                                 time,
                                 size=15,
                                 color=ft.Colors.GREY_800
                             ),
-                            ft.Icon(
-                                icon,
-                                size=25,
-                                color=ft.Colors.BLUE_GREY
-                            ),
+                            icon,
                             ft.Text(
-                                value=f"{temp}°",
-                                size=15,
+                                value=f"{temp}°C",
+                                size=18,
                                 color=ft.Colors.BLACK,
                                 weight=ft.FontWeight.BOLD
                             ),
                             ft.Row(
-                                spacing=0,
+                                spacing=3,
                                 controls=[
                                     ft.Icon(
                                         icon=ft.Icons.WATER_DROP,
+                                        size=15
 
                                     ),
                                     ft.Text(
                                         value=f"{rain}%",
                                         color=ft.Colors.BLACK,
-                                        weight=ft.FontWeight.BOLD
+                                        weight=ft.FontWeight.BOLD,
+                                        size=15
+
                                     ),
                                 ]
                             )
@@ -322,6 +346,7 @@ def home_page(page: ft.Page) -> ft.View:
                 )
     
     body_hour = ft.Container(
+        expand=True,
         padding = 10,
         border_radius=10,
         gradient=ft.LinearGradient(
@@ -333,13 +358,7 @@ def home_page(page: ft.Page) -> ft.View:
                 ],
         ),
 
-        content = ft.Row(
-            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-            controls = [
-                hour_forecast_container(hour["time"],hour["icon"],hour["temp"],hour["rain"]) for hour in hourly_forecast
-            ],
-            scroll=ft.ScrollMode.AUTO
-        )
+        content = hourly_row
     )
 
     body_day = ft.Container(
@@ -366,7 +385,8 @@ def home_page(page: ft.Page) -> ft.View:
 
 
     async def search_weather(e):
-        print("\nYes")
+
+        print("yes")
         lat = lat_input.value
         lon = lon_input.value
     
@@ -382,11 +402,13 @@ def home_page(page: ft.Page) -> ft.View:
                 response.raise_for_status()
                 data = response.json()
     
-                print("\nYes")
+                
                 # data
+                #current
                 current = data.get("current",{})
                 city = current.get("name","")
                 current_temp = int(current.get("main",{}).get("temp",0))
+                current_temp_code = data["current"]["weather"][0]["icon"]
                 current_description = data["current"]["weather"][0]["description"]
                 high_current_temp = int(current.get("main",{}).get("temp_max",0))
                 low_current_temp = int(current.get("main",{}).get("temp_min",0))
@@ -397,17 +419,33 @@ def home_page(page: ft.Page) -> ft.View:
                 visibility = int(current.get("visibility",0) / 1000)
     
     
-                curr_temp = data["current"]
+                # forecast
+                # Hour
                 hour_cast = data["forecast"]["hours"]
+                hourly_three = [hour_cast[i] for i in hour_cast]
+                hourly_controls = [hour_forecast_container(
+                        hour["time"][0:5],
+                        weather_icon(hour["icon"],50),
+                        hour["temp"],
+                        hour["rain"]
+                )
+                for hour in hourly_three
+                ]
+
                 day_cast = data["forecast"]["days"]
     
                     # assign the data
     
                 city_name.value = city
                 city_temp.value = f"{current_temp}°C"
+                current_weather_icon.src = f"https://openweathermap.org/img/wn/{current_temp_code}@2x.png"
+                if current_temp_code:
+                    current_weather_icon.visible = True
+
                 city_description.value = current_description
                 city_high.value = f"H: {high_current_temp}°C"
                 city_low.value = f"L: {low_current_temp}°C"
+
                 city_feel_like.value = f"Feel like {current_feel_like}°C"
                 city_humidity_value = f"{humidity} %"
                 city_wind_value = f"{wind} km/h"
@@ -417,24 +455,17 @@ def home_page(page: ft.Page) -> ft.View:
                 humidity_text.value = city_humidity_value
                 wind_text.value = city_wind_value
                 visibility_text.value = city_visibility_value
+
+                # Forecast
+                # Hour
+                hourly_row.controls = hourly_controls
                     
-                    
-                print(
-                        f"""
-                        name: {city}
-                        temp: {current_temp}
-                        description: {current_description}
-                        high: {high_current_temp}
-                        low: {low_current_temp}
-                        
-                        feels like: {current_feel_like}
-                        humidity: {humidity} %
-                        wind: {wind} km/h
-                        visibility: {visibility} km
-                        """)
+                
+                print(hourly_controls)
+                
     
-        except:
-            pass
+        except httpx.HTTPError as e:
+            print(e)
     
         page.update()
         
