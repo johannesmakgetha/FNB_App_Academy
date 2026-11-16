@@ -441,7 +441,6 @@ def home_page(page: ft.Page) -> ft.View:
                 wind = int(current.get("wind",{}).get("speed",0) * 3.6)
                 visibility = int(current.get("visibility",0) / 1000)
     
-    
                 # forecast
                 # Hour
                 hour_cast = data["forecast"]["hours"]
