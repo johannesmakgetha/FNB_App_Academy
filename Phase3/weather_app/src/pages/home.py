@@ -12,58 +12,19 @@ def home_page(page: ft.Page) -> ft.View:
     lon_input = ft.TextField(
         label="lon"
     )
-
-    async def search_weather(e):
-        lat = lat_input.value
-        lon = lon_input.value
-
-        try:
-            async with httpx.AsyncClient() as client:
-                response = await client.get(
-                    url=LATLON_URL,
-                    params={
-                        "lat":lat,
-                        "lon":lon
-                    }    
-                )
-                response.raise_for_status()
-                data = response.json()
-
-                # data
-                current = data.get("current",{})
-                city = current.get("name","")
-                current_temp = int(current.get("main",{}).get("temp",0))
-                current_description = data["current"]["weather"][0]["description"]
-                high_current_temp = int(current.get("main",{}).get("temp_max",0))
-                low_current_temp = int(current.get("main",{}).get("temp_min",0))
-
-                current_feel_like = int(current.get("main",{}).get("feels_like",0))
-                humidity = current.get("main",{}).get("humidity",0)
-                wind = int(current.get("wind",{}).get("speed",0) * 3.6)
-                visibility = int(current.get("visibility",0) / 1000)
-
-
-                curr_temp = data["current"]
-                hour_cast = data["forecast"]["hours"]
-                day_cast = data["forecast"]["days"]
-                
-                print(
-                    f"""
-                    name: {city}
-                    temp: {current_temp}
-                    description: {current_description}
-                    high: {high_current_temp}
-                    low: {low_current_temp}
-                    
-                    feels like: {current_feel_like}
-                    humidity: {humidity} %
-                    wind: {wind} km/h
-                    visibility: {visibility} km
-                    """)
-
-        except:
-            pass
     
+    city_name = ft.Text(value="",size=20,weight=ft.FontWeight.W_500,color=ft.Colors.WHITE)
+    city_temp = ft.Text(value="",size=40,weight=ft.FontWeight.BOLD)
+    city_description = ft.Text(value="",size=17,weight=ft.FontWeight.BOLD)
+    city_high = ft.Text(value="",size=15,weight=ft.FontWeight.BOLD)
+    city_low = ft.Text(value="",size=15,weight=ft.FontWeight.BOLD)
+    city_feel_like = ft.Text(value="",color=ft.Colors.WHITE,size=12)
+    city_humidity = ft.Text(value="")
+    city_wind = ft.Text(value="")
+    city_visibility = ft.Text(value="")
+    
+
+ 
     top = ft.Container(
         gradient = ft.LinearGradient(
                 begin = ft.Alignment.BOTTOM_LEFT,
@@ -96,7 +57,7 @@ def home_page(page: ft.Page) -> ft.View:
                                 ft.Colors.with_opacity(0.3,ft.Colors.WHITE)
                             )
                         ),
-                        ft.Text("Ficksburg",size=20,weight=ft.FontWeight.W_500,color=ft.Colors.WHITE)
+                        city_name
                         ],
                     ),
                 ft.Row(
@@ -104,12 +65,12 @@ def home_page(page: ft.Page) -> ft.View:
                     controls=[
                         ft.Column(
                             controls = [
-                            ft.Text("24°C",size=40,weight=ft.FontWeight.BOLD),
-                            ft.Text("Partly cloudy",size=17,weight=ft.FontWeight.BOLD),
+                            city_temp,
+                            city_description,
                             ft.Row(
                                 controls=[
-                                    ft.Text("H: 26°C",size=15,weight=ft.FontWeight.BOLD),
-                                    ft.Text("L: 24°C",size=15,weight=ft.FontWeight.BOLD)
+                                    city_low,
+                                    city_high
                                 ]
                             )
                             ]
@@ -125,11 +86,7 @@ def home_page(page: ft.Page) -> ft.View:
             ft.Row(
                 controls=[
                     ft.Container(
-                        content=ft.Text(
-                            "Feels like",
-                            color=ft.Colors.WHITE,
-                            size=12,
-                        ),
+                        content=city_feel_like,
                         padding=ft.Padding.symmetric(horizontal=12, vertical=6),
                         bgcolor=ft.Colors.with_opacity(0.15, ft.Colors.WHITE),
                         border=ft.Border.all(
@@ -146,6 +103,8 @@ def home_page(page: ft.Page) -> ft.View:
             ]
             )
             )
+
+
     
     def create_container(sett,value):
         if sett == "Feels like":
@@ -399,6 +358,78 @@ def home_page(page: ft.Page) -> ft.View:
                 scroll=ft.ScrollMode.AUTO
             )
         )
+
+
+    async def search_weather(e):
+        print("\nYes")
+        lat = lat_input.value
+        lon = lon_input.value
+    
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(
+                    url=LATLON_URL,
+                    params={
+                        "lat":lat,
+                        "lon":lon
+                    }    
+                )
+                response.raise_for_status()
+                data = response.json()
+    
+                print("\nYes")
+                # data
+                current = data.get("current",{})
+                city = current.get("name","")
+                current_temp = int(current.get("main",{}).get("temp",0))
+                current_description = data["current"]["weather"][0]["description"]
+                high_current_temp = int(current.get("main",{}).get("temp_max",0))
+                low_current_temp = int(current.get("main",{}).get("temp_min",0))
+    
+                current_feel_like = int(current.get("main",{}).get("feels_like",0))
+                humidity = current.get("main",{}).get("humidity",0)
+                wind = int(current.get("wind",{}).get("speed",0) * 3.6)
+                visibility = int(current.get("visibility",0) / 1000)
+    
+    
+                curr_temp = data["current"]
+                hour_cast = data["forecast"]["hours"]
+                day_cast = data["forecast"]["days"]
+    
+                    # assign the data
+    
+                city_name.value = city
+                city_temp.value = f"{current_temp}°C"
+                city_description.value = current_description
+                city_high.value = f"H: {high_current_temp}°C"
+                city_low.value = f"L: {low_current_temp}°C"
+                city_feel_like.value = f"Feel like {current_feel_like}°C"
+                city_humidity.value = f"{humidity} %"
+                city_wind.value = f"{wind} km/h"
+                city_visibility.value = f"{visibility} km"
+                    
+                    
+                print(
+                        f"""
+                        name: {city}
+                        temp: {current_temp}
+                        description: {current_description}
+                        high: {high_current_temp}
+                        low: {low_current_temp}
+                        
+                        feels like: {current_feel_like}
+                        humidity: {humidity} %
+                        wind: {wind} km/h
+                        visibility: {visibility} km
+                        """)
+    
+        except:
+            pass
+    
+        page.update()
+        
+    
+
 
     search_button = ft.Button(
             content = "Search",
