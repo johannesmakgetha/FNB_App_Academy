@@ -55,7 +55,8 @@ def search_page(page: ft.Page,co_ordinates) -> ft.View:
     )
 
     searched_column = ft.Column(
-        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+        spacing = 0,
+        alignment=ft.MainAxisAlignment.SPACE_AROUND,
         scroll=ft.ScrollMode.AUTO
     )
 
@@ -66,47 +67,38 @@ def search_page(page: ft.Page,co_ordinates) -> ft.View:
 
         await page.push_route("/home")
 
-    def searched_city_container(num,city_name,lat,lon,state,country):
+    def searched_city_container(city_name,lat,lon,state,country):
         return ft.Container(
-                    border=ft.Border.all(1,ft.Colors.with_opacity(0.3,ft.Colors.GREY_800)),
-                    height=100,
-                    bgcolor=ft.Colors.WHITE,
-                    border_radius=10,
-                    padding = 10,
+                    border=ft.Border.only(bottom=ft.BorderSide(2,ft.Colors.with_opacity(0.3,ft.Colors.GREY_800))),
+                    bgcolor=ft.Colors.GREY_800,
+                    padding=ft.Padding(0,5,5,10),
                     on_click= lambda e: page.run_task(select_city,lat,lon),
-                    #on_click= lambda e: select_city(e,lat,lon),
                     content = ft.Row(
-                        alignment=ft.MainAxisAlignment.SPACE_AROUND,
-        
                         controls=[
-                            ft.Text(
-                                num,
-                                size=10,
-                                color=ft.Colors.GREY_800
-                            ),
                             ft.Column(
+                                spacing = 0,
                                 controls=[
                                 ft.Text(
                                         city_name,
                                         size=25,
-                                        color=ft.Colors.GREY_800
+                                        color=ft.Colors.WHITE
                                 ),
                                 ft.Row(
                                     controls=[
                                         ft.Text(
                                             state,
                                             size=15,
-                                            color=ft.Colors.GREY_800
+                                            color=ft.Colors.GREY_300
                                         ),
                                         ft.Text(
                                             ",",
                                             size=15,
-                                            color=ft.Colors.GREY_800
+                                            color=ft.Colors.GREY_300
                                         ),
                                         ft.Text(
                                             country,
                                             size=15,
-                                            color=ft.Colors.GREY_800
+                                            color=ft.Colors.GREY_300
                                         )
                                     ]
                                 )
@@ -146,7 +138,6 @@ def search_page(page: ft.Page,co_ordinates) -> ft.View:
 
                 display_container = [
                     searched_city_container(
-                        i,
                         app_city_data["searched_results"][i]["name"],
                         app_city_data["searched_results"][i]["lat"],
                         app_city_data["searched_results"][i]["lon"],
@@ -202,30 +193,13 @@ def search_page(page: ft.Page,co_ordinates) -> ft.View:
     bottom_body = ft.Container(
         padding= 10,
         border_radius= 10,
-        gradient=ft.LinearGradient(
-            begin=ft.Alignment(-0.707, -0.707),
-            end=ft.Alignment(0.707, 0.707),
-            colors=[
-                ft.Colors.with_opacity(1, "#EDF8F6"),
-                ft.Colors.with_opacity(1, "#EDF1FB"),
-                ],
-        ),
+        bgcolor=ft.Colors.GREY_800,
         content = searched_column
     )
         
     main_layout = ft.Container(
         expand=True,
         bgcolor = ft.Colors.BLACK,
-        gradient= ft.LinearGradient(
-                    begin=ft.Alignment.TOP_LEFT,
-                    end = ft.Alignment.BOTTOM_RIGHT,
-                    colors=[
-                "#6988DC",
-                "#769DEB",
-                "#A27EE3",
-            ]
-                ),
-
         content=ft.Column(
             expand = True,
             scroll=ft.ScrollMode.AUTO,
