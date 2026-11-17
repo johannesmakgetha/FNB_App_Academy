@@ -5,7 +5,11 @@ import httpx
 
 LATLON_URL = "http://127.0.0.1:8000/weather"
 
-def home_page(page: ft.Page) -> ft.View:
+def home_page(page: ft.Page,co_ordinate) -> ft.View:
+
+    async def go_search(e):
+        await page.push_route("/search")
+
     lat_input = ft.TextField(
         label="lat"
     )
@@ -406,13 +410,12 @@ def home_page(page: ft.Page) -> ft.View:
             # )
         )
 
+    print("yes")
+    lat = co_ordinate["selected_lat"]
+    lon = co_ordinate["selected_lon"]
+    print(lat,lon)
 
-    async def search_weather(e):
-
-        print("yes")
-        lat = lat_input.value
-        lon = lon_input.value
-    
+    async def search_weather():
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.get(
@@ -522,7 +525,7 @@ def home_page(page: ft.Page) -> ft.View:
         bgcolor=ft.Colors.BLUE,
         content=ft.Row(
             controls=[
-                ft.IconButton(icon=ft.Icons.MENU_OPEN, icon_color=ft.Colors.WHITE),
+                ft.IconButton(icon=ft.Icons.MENU_OPEN, icon_color=ft.Colors.WHITE,on_click=go_search),
                 ft.Container(expand=True),
                 ft.IconButton(icon=ft.Icons.SEARCH, icon_color=ft.Colors.WHITE)
             ]
@@ -546,7 +549,8 @@ def home_page(page: ft.Page) -> ft.View:
         page.update()
 
     
-
+    page.run_task(search_weather)
+    
     main_layout = ft.Container(
         expand=True,
         gradient= ft.LinearGradient(
