@@ -517,6 +517,35 @@ def home_page(page: ft.Page) -> ft.View:
 
             
         )
+    bottom_bar = ft.BottomAppBar(
+        border_radius= ft.BorderRadius.all(20),
+        bgcolor=ft.Colors.BLUE,
+        content=ft.Row(
+            controls=[
+                ft.IconButton(icon=ft.Icons.MENU_OPEN, icon_color=ft.Colors.WHITE),
+                ft.Container(expand=True),
+                ft.IconButton(icon=ft.Icons.SEARCH, icon_color=ft.Colors.WHITE)
+            ]
+        )
+    )
+
+    page.bottom_appbar = bottom_bar
+
+    def handle_scroll(e: ft.OnScrollEvent):
+        if e.event_type == ft.ScrollType.USER:
+            if e.direction == ft.ScrollDirection.REVERSE and bottom_bar.visible:
+                bottom_bar.visible = False
+                bottom_bar.update()
+            
+            elif e.direction == ft.ScrollDirection.FORWARD and not bottom_bar.visible:
+                bottom_bar.visible = True
+                bottom_bar.update()
+            
+
+        page.data = e.pixels
+        page.update()
+
+    
 
     main_layout = ft.Container(
         expand=True,
@@ -531,7 +560,9 @@ def home_page(page: ft.Page) -> ft.View:
                 ),
         padding=20,
         content=ft.Column(
+            expand = True,
             scroll=ft.ScrollMode.AUTO,
+            on_scroll= handle_scroll,
             controls=[
                 lat_input,
                 lon_input,
