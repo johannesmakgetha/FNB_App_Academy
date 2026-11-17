@@ -529,7 +529,7 @@ def home_page(page: ft.Page) -> ft.View:
         )
     )
 
-    page.bottom_appbar = bottom_bar
+    # page.bottom_appbar = bottom_bar
 
     def handle_scroll(e: ft.OnScrollEvent):
         if e.event_type == ft.ScrollType.USER:
@@ -585,5 +585,12 @@ def home_page(page: ft.Page) -> ft.View:
 
 
     )
-    return main_layout
+    return ft.View(
+        bottom_appbar=bottom_bar,
+        route="/",
+        controls = [
+            main_layout
+        ]
+    )
+    
             
