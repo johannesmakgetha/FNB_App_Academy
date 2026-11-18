@@ -410,10 +410,10 @@ def home_page(page: ft.Page,co_ordinate) -> ft.View:
             # )
         )
 
-    print("yes")
+    
     lat = co_ordinate["selected_lat"]
     lon = co_ordinate["selected_lon"]
-    print(lat,lon)
+  
 
     async def search_weather():
         try:
@@ -458,8 +458,14 @@ def home_page(page: ft.Page,co_ordinate) -> ft.View:
                 ]
                 # Forecast
                 day_cast = data["forecast"]["days"]
-
-                ffdfd = [ (i,day_cast[i]["icon"]) for i in day_cast]
+                today_low_high = {}
+                
+                for i in day_cast:
+                    today_low_high["low"] = day_cast[i]["min_temp"]
+                    today_low_high["high"] = day_cast[i]["max_temp"]
+                    break
+                print(today_low_high)
+                
                 ffd = [ 
                     day_forecast_container(
                         i,
@@ -469,7 +475,7 @@ def home_page(page: ft.Page,co_ordinate) -> ft.View:
                         day_cast[i]["rain"]
                     )     
                 for i in day_cast]
-                print(ffd)
+                
     
                     # assign the data
     
@@ -480,8 +486,8 @@ def home_page(page: ft.Page,co_ordinate) -> ft.View:
                     current_weather_icon.visible = True
 
                 city_description.value = current_description
-                city_high.value = f"H: {high_current_temp}°C"
-                city_low.value = f"L: {low_current_temp}°C"
+                city_high.value = f"H: {today_low_high["high"]}°C"
+                city_low.value = f"L: {today_low_high["low"]}°C"
 
                 city_feel_like.value = f"Feel like {current_feel_like}°C"
                 city_humidity_value = f"{humidity} %"
@@ -500,10 +506,6 @@ def home_page(page: ft.Page,co_ordinate) -> ft.View:
                 # Day
 
                 daily_column.controls = ffd
-
-                    
-                
-                print(day_cast)
                 
     
         except httpx.HTTPError as e:
