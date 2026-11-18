@@ -128,13 +128,20 @@ async def get_forecast(lat,lon):
                 day_name = dt_obj.strftime("%A")
                 today = datetime.now().strftime("%A")
 
-                if day_name != today:
-                    days[f"{day_name}{i}"]= {
-                        "time": data_response["list"][i]["dt_txt"].split()[1],
-                        "temp": data_response["list"][i]["main"]["temp"],
-                        "rain": data_response["list"][i]["pop"],
-                        "icon": data_response["list"][i]["weather"][0]["icon"]
-                    }
+                # if day_name != today:
+                #     days[f"{day_name}{i}"]= {
+                #         "time": data_response["list"][i]["dt_txt"].split()[1],
+                #         "temp": data_response["list"][i]["main"]["temp"],
+                #         "rain": data_response["list"][i]["pop"],
+                #         "icon": data_response["list"][i]["weather"][0]["icon"]
+                #     }
+                
+                days[f"{day_name}{i}"]= {
+                    "time": data_response["list"][i]["dt_txt"].split()[1],
+                    "temp": data_response["list"][i]["main"]["temp"],
+                    "rain": data_response["list"][i]["pop"],
+                    "icon": data_response["list"][i]["weather"][0]["icon"]
+                }
 
             for i in days:
                 day = ''.join(filter(str.isalpha,i))
@@ -175,7 +182,7 @@ async def get_forecast(lat,lon):
             return None
 
 # current =  asyncio.run(get_current(lat,lon))
-# forecast = asyncio.run(get_forecast(lat,lon))
+# forecast = asyncio.run(get_forecast(-27.87,28.87))
 
 
 # with open("current.json","w",encoding="utf-8") as f:
