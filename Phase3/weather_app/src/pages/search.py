@@ -69,7 +69,7 @@ def search_page(page: ft.Page,co_ordinates) -> ft.View:
 
     def searched_city_container(city_name,lat,lon,state,country):
         return ft.Container(
-                    border=ft.Border.only(bottom=ft.BorderSide(2,ft.Colors.with_opacity(0.3,ft.Colors.GREY_800))),
+                    border=ft.Border.only(bottom=ft.BorderSide(2,ft.Colors.with_opacity(0.3,ft.Colors.GREY_100))),
                     bgcolor=ft.Colors.GREY_800,
                     padding=ft.Padding(0,5,5,10),
                     on_click= lambda e: page.run_task(select_city,lat,lon),
