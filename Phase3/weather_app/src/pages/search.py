@@ -12,6 +12,8 @@ def search_page(page: ft.Page,co_ordinates) -> ft.View:
     async def go_to_home(e):
         await page.push_route('/home')
 
+    loading = ft.ProgressBar(color=ft.Colors.AMBER, visible=False)
+    
     app_bar = ft.AppBar(
 
         leading=ft.IconButton(
@@ -119,7 +121,10 @@ def search_page(page: ft.Page,co_ordinates) -> ft.View:
         else:
             city_name.helper = None
             city_name.update()
-    
+
+        loading.visible = True
+        page.update()
+
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.get(
@@ -149,7 +154,7 @@ def search_page(page: ft.Page,co_ordinates) -> ft.View:
         except httpx.HTTPError as e:
             print(e)
 
-    
+        loading.visible = False
         page.update()
     
     top_body = ft.Container(
@@ -189,8 +194,9 @@ def search_page(page: ft.Page,co_ordinates) -> ft.View:
         padding= 10,
         border_radius= 10,
         bgcolor=ft.Colors.GREY_800,
-        content = searched_column
+        content =  searched_column
     )
+
         
     main_layout = ft.Container(
         expand=True,
@@ -200,6 +206,7 @@ def search_page(page: ft.Page,co_ordinates) -> ft.View:
             scroll=ft.ScrollMode.AUTO,
             controls=[
                 top_body,
+                loading,
                 bottom_body
             ]
         )
