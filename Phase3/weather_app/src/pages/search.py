@@ -36,7 +36,7 @@ def search_page(page: ft.Page,co_ordinates) -> ft.View:
         )
 
     error_message = ft.Text(
-        "Please check Internet connection or correct your city name",
+        value= "",
         size= 15,
         weight=ft.FontWeight.BOLD,
         visible= False
@@ -68,6 +68,11 @@ def search_page(page: ft.Page,co_ordinates) -> ft.View:
         co_ordinates["selected_lon"] = lon
 
         await page.push_route("/home")
+
+    def show_error(message):
+        error_message.value = message
+        error_message.visible = True
+        page.update()
 
     def searched_city_container(city_name,lat,lon,state,country):
         if not state:
@@ -113,26 +118,35 @@ def search_page(page: ft.Page,co_ordinates) -> ft.View:
     app_city_data = {
         "searched_results": {}
     }
+
+
     async def search_name(e):
+        error_message.visible = False
+        error_message.update()
+
+        searched_column.visible = False
+        
         if not city_name.value:
             city_name.helper = "Please enter a place"
             city_name.update()
             return
-        else:
-            city_name.helper = None
-            city_name.update()
+        
+        city_name.helper = None
+        city_name.update()
+
 
         loading.visible = True
         page.update()
 
         try:
-            async with httpx.AsyncClient() as client:
+            async with httpx.AsyncClient(timeout=15) as client:
                 response = await client.get(
                     url=CITY_URL,
                     params={
                         "city_name":city_name.value,
                     }    
                 )
+                
                 response.raise_for_status()
                 app_city_data["searched_results"] = response.json()
 
@@ -148,11 +162,32 @@ def search_page(page: ft.Page,co_ordinates) -> ft.View:
                 ]
 
                 searched_column.controls = display_container
+                searched_column.visible = True
                 
                
     
-        except httpx.HTTPError as e:
-            print(e)
+        except httpx.TimeoutException:
+            show_error("Time out. Please try again.")
+
+        except httpx.ConnectError:
+            show_error("Unable to connect. Check your internet connection.")
+
+        except httpx.HTTPStatusError as e:
+
+            if e.response.status_code == 404:
+                show_error("City or place not found.")
+
+            elif e.response.status_code == 429:
+                show_error("Too many requests. Please wait.")
+
+            elif e.response.status_code == 500:
+                show_error("Server error. Please try again later.")
+
+            else:
+                show_error("Something went wrong. Please try again.")
+
+        except httpx.RequestError:
+            show_error("Network error. Please check your connection.")
 
         loading.visible = False
         page.update()
@@ -169,6 +204,7 @@ def search_page(page: ft.Page,co_ordinates) -> ft.View:
                     content=ft.Column(
                         controls=[
                             city_name,
+                            error_message,
                             ft.Row(
                                 alignment=ft.MainAxisAlignment.CENTER,
                                 controls=[
