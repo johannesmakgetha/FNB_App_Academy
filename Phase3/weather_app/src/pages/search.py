@@ -38,6 +38,7 @@ def search_page(page: ft.Page,co_ordinates) -> ft.View:
     error_message = ft.Text(
         value= "",
         size= 15,
+        color= ft.Colors.RED,
         weight=ft.FontWeight.BOLD,
         visible= False
     )
