@@ -106,14 +106,7 @@ async def get_forecast(lat,lon):
             days_min_max = {}
             data = {}
 
-            # for i in range(9):
-            #     if str(datetime.today()).split()[0] in data_response["list"][i]["dt_txt"]:
-            #         data_hour[f"time{i+1}"] = {
-            #             "time": data_response["list"][i]["dt_txt"].split()[1],
-            #             "temp": int(data_response["list"][i]["main"]["temp"]),
-            #             "rain": int(data_response["list"][i]["pop"] * 100),
-            #             "icon": data_response["list"][i]["weather"][0]["icon"]
-            #         }
+
             for i in range(9):
                 data_hour[f"time{i+1}"] = {
                 "time": data_response["list"][i]["dt_txt"].split()[1],
@@ -121,6 +114,7 @@ async def get_forecast(lat,lon):
                 "rain": int(data_response["list"][i]["pop"] * 100),
                 "icon": data_response["list"][i]["weather"][0]["icon"]
                 }
+
             
             for i in range(len(data_response["list"])):
                 date_str = data_response["list"][i]["dt_txt"]
@@ -128,13 +122,7 @@ async def get_forecast(lat,lon):
                 day_name = dt_obj.strftime("%A")
                 today = datetime.now().strftime("%A")
 
-                # if day_name != today:
-                #     days[f"{day_name}{i}"]= {
-                #         "time": data_response["list"][i]["dt_txt"].split()[1],
-                #         "temp": data_response["list"][i]["main"]["temp"],
-                #         "rain": data_response["list"][i]["pop"],
-                #         "icon": data_response["list"][i]["weather"][0]["icon"]
-                #     }
+
                 
                 days[f"{day_name}{i}"]= {
                     "time": data_response["list"][i]["dt_txt"].split()[1],
@@ -142,7 +130,7 @@ async def get_forecast(lat,lon):
                     "rain": data_response["list"][i]["pop"],
                     "icon": data_response["list"][i]["weather"][0]["icon"]
                 }
-
+            
             for i in days:
                 day = ''.join(filter(str.isalpha,i))
 
@@ -161,6 +149,19 @@ async def get_forecast(lat,lon):
                     data_days[day]["time"] = days[i]["time"]
                     data_days[day]["icon"] = days[i]["icon"]
 
+            
+                if f"{today}" in f"{i}":
+                    if days[i]["time"] == "15:00:00":
+                        data_days[day]["time"] = days[i]["time"]
+                        data_days[day]["icon"] = days[i]["icon"]
+
+                    elif days[i]["time"] == "18:00:00":
+                        data_days[day]["time"] = days[i]["time"]
+                        data_days[day]["icon"] = days[i]["icon"]
+
+                    elif days[i]["time"] == "21:00:00":
+                        data_days[day]["time"] = days[i]["time"]
+                        data_days[day]["icon"] = days[i]["icon"]
 
             for i in data_days:
                 days_min_max[i] = {
@@ -182,14 +183,14 @@ async def get_forecast(lat,lon):
             return None
 
 # current =  asyncio.run(get_current(lat,lon))
-# forecast = asyncio.run(get_forecast(-27.87,28.87))
+forecast = asyncio.run(get_forecast(-27.87,28.87))
 
 
 # with open("current.json","w",encoding="utf-8") as f:
 #     json.dump(current,f,indent=4)
 
-# with open("forecast.json","w", encoding="utf-8") as f:
-#     json.dump(forecast,f,indent=4)
+with open("forecast.json","w", encoding="utf-8") as f:
+    json.dump(forecast,f,indent=4)
 
 
 
