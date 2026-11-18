@@ -10,13 +10,6 @@ def home_page(page: ft.Page,co_ordinate) -> ft.View:
     async def go_search(e):
         await page.push_route("/search")
 
-    lat_input = ft.TextField(
-        label="lat"
-    )
-    lon_input = ft.TextField(
-        label="lon"
-    )
-
     loading_dialog = ft.AlertDialog(
         modal=True,
         content=ft.Column(
@@ -290,25 +283,7 @@ def home_page(page: ft.Page,co_ordinate) -> ft.View:
                     
                 )
 
-    hourly_forecast = [
-    {"time": "09:00", "icon": ft.Icons.WB_SUNNY, "temp": 24, "rain": 0},
-    {"time": "10:00", "icon": ft.Icons.WB_SUNNY, "temp": 26, "rain": 0},
-    {"time": "11:00", "icon": ft.Icons.WB_CLOUDY, "temp": 27, "rain": 5},
-    {"time": "12:00", "icon": ft.Icons.CLOUD, "temp": 28, "rain": 10},
-    {"time": "13:00", "icon": ft.Icons.WATER_DROP, "temp": 25, "rain": 60},
-    {"time": "14:00", "icon": ft.Icons.THUNDERSTORM, "temp": 23, "rain": 80},
-    {"time": "15:00", "icon": ft.Icons.CLOUD, "temp": 22, "rain": 20},
-    {"time": "16:00", "icon": ft.Icons.WB_SUNNY, "temp": 21, "rain": 0},
-    {"time": "17:00", "icon": ft.Icons.WB_SUNNY, "temp": 20, "rain": 0},
-        ]
-
-    day_forecast = [
-    {"day": "Mon", "icon": ft.Icons.WB_SUNNY, "min_temp": 16, "max_temp": 28, "rain": 0},
-    {"day": "Tue", "icon": ft.Icons.WB_CLOUDY, "min_temp": 17, "max_temp": 26, "rain": 10},
-    {"day": "Wed", "icon": ft.Icons.CLOUD, "min_temp": 15, "max_temp": 24, "rain": 30},
-    {"day": "Thu", "icon": ft.Icons.THUNDERSTORM, "min_temp": 14, "max_temp": 22, "rain": 80},
-    {"day": "Fri", "icon": ft.Icons.WATER_DROP, "min_temp": 15, "max_temp": 23, "rain": 60},
-]
+    
     def day_forecast_container(days,icon,min_temp,max_temp,rain):
         return ft.Container(
                     border=ft.Border.all(1,ft.Colors.with_opacity(0.3,ft.Colors.GREY_800)),
@@ -484,7 +459,7 @@ def home_page(page: ft.Page,co_ordinate) -> ft.View:
                     today_low_high["high"] = day_cast[i]["max_temp"]
                     break
 
-                print(day_cast)
+                
                 
                 ffd = [ 
                     day_forecast_container(
@@ -536,14 +511,6 @@ def home_page(page: ft.Page,co_ordinate) -> ft.View:
             page.update()
         
     
-
-
-    search_button = ft.Button(
-            content = "Search",
-            on_click = search_weather
-
-            
-        )
     bottom_bar = ft.BottomAppBar(
         border_radius= ft.BorderRadius.all(20),
         bgcolor=ft.Colors.BLUE,
@@ -592,9 +559,6 @@ def home_page(page: ft.Page,co_ordinate) -> ft.View:
             scroll=ft.ScrollMode.AUTO,
             on_scroll= handle_scroll,
             controls=[
-                lat_input,
-                lon_input,
-                search_button,
                 top,
                 ft.Text("Weather now", size=30,color=ft.Colors.WHITE,weight=ft.FontWeight.BOLD),
                 top_body,
