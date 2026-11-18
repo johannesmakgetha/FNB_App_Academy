@@ -68,6 +68,10 @@ def search_page(page: ft.Page,co_ordinates) -> ft.View:
         await page.push_route("/home")
 
     def searched_city_container(city_name,lat,lon,state,country):
+        if not state:
+            state = ""
+        if not country:
+            country = ""
         return ft.Container(
                     border=ft.Border.only(bottom=ft.BorderSide(2,ft.Colors.with_opacity(0.3,ft.Colors.GREY_100))),
                     bgcolor=ft.Colors.GREY_800,
@@ -80,23 +84,14 @@ def search_page(page: ft.Page,co_ordinates) -> ft.View:
                                 controls=[
                                 ft.Text(
                                         city_name,
-                                        size=25,
-                                        color=ft.Colors.WHITE
+                                        size=20,
+                                        color=ft.Colors.WHITE,
+                                        weight=ft.FontWeight.BOLD
                                 ),
                                 ft.Row(
                                     controls=[
                                         ft.Text(
-                                            state,
-                                            size=15,
-                                            color=ft.Colors.GREY_300
-                                        ),
-                                        ft.Text(
-                                            ",",
-                                            size=15,
-                                            color=ft.Colors.GREY_300
-                                        ),
-                                        ft.Text(
-                                            country,
+                                            f"{state}, {country}",
                                             size=15,
                                             color=ft.Colors.GREY_300
                                         )
