@@ -483,7 +483,8 @@ def home_page(page: ft.Page,co_ordinate) -> ft.View:
                     today_low_high["low"] = day_cast[i]["min_temp"]
                     today_low_high["high"] = day_cast[i]["max_temp"]
                     break
-              
+
+                print(day_cast)
                 
                 ffd = [ 
                     day_forecast_container(
