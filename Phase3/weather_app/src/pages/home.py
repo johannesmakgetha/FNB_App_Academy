@@ -16,6 +16,18 @@ def home_page(page: ft.Page,co_ordinate) -> ft.View:
     lon_input = ft.TextField(
         label="lon"
     )
+
+    loading_dialog = ft.AlertDialog(
+        modal=True,
+        content=ft.Column(
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            tight=True,
+            spacing=20,
+            controls=[
+                ft.ProgressRing()
+            ]
+        )
+    )
     
     city_name = ft.Text(value="",size=20,weight=ft.FontWeight.W_500,color=ft.Colors.WHITE)
     city_temp = ft.Text(value="",size=40,weight=ft.FontWeight.BOLD)
@@ -422,6 +434,7 @@ def home_page(page: ft.Page,co_ordinate) -> ft.View:
   
 
     async def search_weather():
+        page.show_dialog(loading_dialog)
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.get(
@@ -470,7 +483,7 @@ def home_page(page: ft.Page,co_ordinate) -> ft.View:
                     today_low_high["low"] = day_cast[i]["min_temp"]
                     today_low_high["high"] = day_cast[i]["max_temp"]
                     break
-                print(today_low_high)
+              
                 
                 ffd = [ 
                     day_forecast_container(
@@ -516,8 +529,10 @@ def home_page(page: ft.Page,co_ordinate) -> ft.View:
     
         except httpx.HTTPError as e:
             print(e)
-    
-        page.update()
+
+        finally:
+            page.pop_dialog()
+            page.update()
         
     
 
