@@ -209,15 +209,21 @@ def home_page(page: ft.Page,co_ordinate) -> ft.View:
             alignment=ft.MainAxisAlignment.SPACE_EVENLY,
             controls=[
                 # Top Row
-                ft.Row(
-                        
+                ft.Row(     
                     controls=[
                         feels_like_container,
                         humidity_container,
+                    ],
+                    alignment=ft.MainAxisAlignment.SPACE_AROUND,
+                    
+                ),
+                ft.Row(     
+                    controls=[
+                        
                         wind_container,
                         visibility_container,
                     ],
-                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                    alignment=ft.MainAxisAlignment.SPACE_AROUND,
                     
                 ),
                 
