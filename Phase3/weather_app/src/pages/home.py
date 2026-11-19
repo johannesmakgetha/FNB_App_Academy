@@ -245,6 +245,7 @@ def home_page(page: ft.Page,co_ordinate) -> ft.View:
                     border_radius=10,
                     padding = ft.Padding(15,15,15,35),
                     content = ft.Column(
+                        
                         spacing =5,
                         controls=[
                             ft.Text(
@@ -292,7 +293,7 @@ def home_page(page: ft.Page,co_ordinate) -> ft.View:
                     border_radius=10,
                     padding = 10,
                     content = ft.Row(
-                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        alignment=ft.MainAxisAlignment.SPACE_EVENLY,
                         controls=[
                             ft.Text(
                                 days,
@@ -393,14 +394,7 @@ def home_page(page: ft.Page,co_ordinate) -> ft.View:
                     ],
             ),
             content = daily_column
-            # content = ft.Column(
-            #     alignment = ft.MainAxisAlignment.SPACE_BETWEEN,
-            #     spacing =0,
-            #     controls = [
-            #         day_forecast_container(day["day"],day["icon"],day["min_temp"],day["max_temp"],day["rain"]) for day in day_forecast
-            #     ],
-            #     scroll=ft.ScrollMode.AUTO
-            # )
+            
         )
 
     
@@ -523,7 +517,6 @@ def home_page(page: ft.Page,co_ordinate) -> ft.View:
         )
     )
 
-    # page.bottom_appbar = bottom_bar
 
     def handle_scroll(e: ft.OnScrollEvent):
         if e.event_type == ft.ScrollType.USER:
@@ -566,12 +559,7 @@ def home_page(page: ft.Page,co_ordinate) -> ft.View:
                 body_hour,
                 ft.Text("Day forecast", size=30,color=ft.Colors.WHITE,weight=ft.FontWeight.BOLD),
                 body_day,
-                ft.Text(
-                    "Bottom Content",
-                    size = 30,
-                    color = ft.Colors.WHITE,
-                    weight=ft.FontWeight.BOLD
-                )
+                
             ]
         )
 
