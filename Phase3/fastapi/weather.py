@@ -130,7 +130,7 @@ async def get_forecast(lat,lon):
                     "rain": data_response["list"][i]["pop"],
                     "icon": data_response["list"][i]["weather"][0]["icon"]
                 }
-            
+
             for i in days:
                 day = ''.join(filter(str.isalpha,i))
 
@@ -149,9 +149,24 @@ async def get_forecast(lat,lon):
                     data_days[day]["time"] = days[i]["time"]
                     data_days[day]["icon"] = days[i]["icon"]
 
-            
-                if f"{today}" in f"{i}":
-                    if days[i]["time"] == "15:00:00":
+                else:
+                    if days[i]["time"] == "00:00:00":
+                        data_days[day]["time"] = days[i]["time"]
+                        data_days[day]["icon"] = days[i]["icon"]
+
+                    elif days[i]["time"] == "03:00:00":
+                        data_days[day]["time"] = days[i]["time"]
+                        data_days[day]["icon"] = days[i]["icon"]
+
+                    elif days[i]["time"] == "06:00:00":
+                        data_days[day]["time"] = days[i]["time"]
+                        data_days[day]["icon"] = days[i]["icon"]
+
+                    elif days[i]["time"] == "09:00:00":
+                        data_days[day]["time"] = days[i]["time"]
+                        data_days[day]["icon"] = days[i]["icon"]
+
+                    elif days[i]["time"] == "15:00:00":
                         data_days[day]["time"] = days[i]["time"]
                         data_days[day]["icon"] = days[i]["icon"]
 
@@ -162,7 +177,8 @@ async def get_forecast(lat,lon):
                     elif days[i]["time"] == "21:00:00":
                         data_days[day]["time"] = days[i]["time"]
                         data_days[day]["icon"] = days[i]["icon"]
-
+            
+                
             for i in data_days:
                 days_min_max[i] = {
                     "min_temp": int(min(data_days[i]["temp"])),
@@ -183,14 +199,14 @@ async def get_forecast(lat,lon):
             return None
 
 # current =  asyncio.run(get_current(lat,lon))
-forecast = asyncio.run(get_forecast(-27.87,28.87))
+#forecast = asyncio.run(get_forecast(-27.87,28.87))
 
 
 # with open("current.json","w",encoding="utf-8") as f:
 #     json.dump(current,f,indent=4)
 
-with open("forecast.json","w", encoding="utf-8") as f:
-    json.dump(forecast,f,indent=4)
+# with open("forecast.json","w", encoding="utf-8") as f:
+#     json.dump(forecast,f,indent=4)
 
 
 
