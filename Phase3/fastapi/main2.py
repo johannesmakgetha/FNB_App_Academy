@@ -2,8 +2,12 @@ from fastapi import FastAPI, HTTPException, Query
 from weather import get_coordinates,get_current,get_forecast
 import httpx
 import asyncio
+import time
+
 
 app = FastAPI()
+
+weather_cache = {}
 
 @app.get("/city")
 async def city(city_name: str = Query(min_length=1)):
@@ -26,16 +30,35 @@ async def city(city_name: str = Query(min_length=1)):
 
 @app.get("/weather")
 async def weather(lat: float, lon: float):
+    
+    # cache key
+    cache_key = f"{lat},{lon}"
+
+    if cache_key in weather_cache:
+        cached_data, timestamp = weather_cache[cache_key]
+
+        if time.time() - timestamp < 600:
+            print("Returning cached weather")
+            return cached_data
+    
     try:
         current, forecast = await asyncio.gather(
             get_current(lat,lon),
             get_forecast(lat,lon)
         )  
 
-        return {
+        data = {
             "current": current,
             "forecast": forecast
         }
+
+        #save data in cache
+        weather_cache[cache_key] = (data,time.time())
+        
+        print("fetching fresh weather")
+        print(weather_cache)
+
+        return data
 
     except httpx.HTTPError:
         raise HTTPException(
