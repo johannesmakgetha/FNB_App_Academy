@@ -29,7 +29,7 @@ async def city(city_name: str = Query(min_length=1)):
 
 
 @app.get("/weather")
-async def weather(lat: float, lon: float):
+async def weather(lat: float = Query(ge=-90,le=90), lon: float = Query(ge=-90,le=90)):
     
     # cache key
     cache_key = f"{lat},{lon}"
@@ -56,7 +56,7 @@ async def weather(lat: float, lon: float):
         weather_cache[cache_key] = (data,time.time())
         
         print("fetching fresh weather")
-        print(weather_cache)
+        #print(weather_cache)
 
         return data
 
