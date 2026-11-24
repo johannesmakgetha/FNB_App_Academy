@@ -12,7 +12,10 @@ from slowapi.extension import _rate_limit_exceeded_handler
 
 limiter = Limiter(key_func=get_remote_address)
 
-app = FastAPI()
+app = FastAPI(
+    docs_url=None,
+    redoc_url=None
+)
 
 app.state.limiter = limiter
 
