@@ -10,14 +10,14 @@ from datetime import datetime
 load_dotenv()
 
 
-API_KEY = os.getenv("API_KEY")
+OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
 BASE_URL = "https://api.openweathermap.org/geo/1.0/direct"
 
 
 
 async def get_coordinates(city_name: str):
 
-    if not API_KEY:
+    if not OPENWEATHER_API_KEY:
         raise RuntimeError("Weather API key is not configured")
 
     async with httpx.AsyncClient() as client:
@@ -27,7 +27,7 @@ async def get_coordinates(city_name: str):
             params={
                 "q": city_name,
                 "limit": 5,
-                "appid": API_KEY
+                "appid": OPENWEATHER_API_KEY
             }
         )
 
@@ -57,7 +57,7 @@ async def get_coordinates(city_name: str):
 async def get_current(lat,lon):
     URL = "https://api.openweathermap.org/data/2.5/weather"
     
-    if not API_KEY:
+    if not OPENWEATHER_API_KEY:
         raise RuntimeError("Weather API key is not configured")
     
     async with httpx.AsyncClient() as client:
@@ -67,7 +67,7 @@ async def get_current(lat,lon):
                 "lat": lat,
                 "lon": lon,
                 "units": "metric",
-                "appid": API_KEY
+                "appid": OPENWEATHER_API_KEY
             }
         )
 
@@ -83,7 +83,7 @@ async def get_current(lat,lon):
 async def get_forecast(lat,lon):
     URL = "https://api.openweathermap.org/data/2.5/forecast"
 
-    if not API_KEY:
+    if not OPENWEATHER_API_KEY:
         raise RuntimeError("Weather API key is not configured")
         
     
@@ -95,7 +95,7 @@ async def get_forecast(lat,lon):
                 "lat": lat,
                 "lon": lon,
                 "units": "metric",
-                "appid": API_KEY
+                "appid": OPENWEATHER_API_KEY
             }
         )
 
@@ -135,6 +135,7 @@ async def get_forecast(lat,lon):
                 "icon": data_response["list"][i]["weather"][0]["icon"]
             }
 
+        today_miday = {"12:00":False}
 
         for i in days:
             day = ''.join(filter(str.isalpha,i))
@@ -149,14 +150,19 @@ async def get_forecast(lat,lon):
 
             data_days[day]["temp"].append(days[i]["temp"])
             data_days[day]["rain"].append(days[i]["rain"])
+
+            for key, value in days.items():
+                if key.startswith(today) and value["time"] == "12:00:00":
+                    today_miday["12:00"] = True
+                    break
             
             if days[i]["time"] == "12:00:00":
-                # print(days)
+                
                 data_days[day]["time"] = days[i]["time"]
                 data_days[day]["icon"] = days[i]["icon"]
-
-            elif today == day and days[i]["time"] != "12:00:00":
-                # print(f"Yes: {day} and the time is: {days[i]["time"]}")
+            
+            
+            elif today == day and days[i]["time"] != "12:00:00" and today_miday["12:00"] == False:
                 
                 if days[i]["time"] == "15:00:00":
                     data_days[day]["time"] = days[i]["time"]
